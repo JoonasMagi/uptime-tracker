@@ -72,10 +72,54 @@ app.get('/success', (req, res) => {
   });
 });
 
-// Dashboard (for redirect test)
+// Dashboard route
 app.get('/dashboard', (req, res) => {
+  const { empty } = req.query;
+
+  if (empty === 'true') {
+    return res.render('dashboard', {
+      title: 'Dashboard - Monitooring',
+      empty: true,
+      isDashboard: true
+    });
+  }
+
+  // Mock data for testing - in real implementation this would come from database
+  const mockWebsites = [
+    {
+      id: 1,
+      name: 'Google',
+      url: 'https://google.com',
+      status: 'online',
+      statusText: 'ONLINE',
+      lastCheck: '12:34:56',
+      responseTime: '120 ms'
+    },
+    {
+      id: 2,
+      name: 'Example Site',
+      url: 'https://example.com',
+      status: 'offline',
+      statusText: 'OFFLINE',
+      lastCheck: '12:33:45',
+      responseTime: 'N/A'
+    },
+    {
+      id: 3,
+      name: 'Test Website',
+      url: 'https://test.example.org',
+      status: 'unknown',
+      statusText: 'UNKNOWN',
+      lastCheck: 'Mitte kunagi',
+      responseTime: 'N/A'
+    }
+  ];
+
   res.render('dashboard', {
-    title: 'Dashboard'
+    title: 'Dashboard - Monitooring',
+    websites: mockWebsites,
+    empty: false,
+    isDashboard: true
   });
 });
 
