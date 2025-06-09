@@ -113,7 +113,7 @@ test.describe('User Story 5: Dashboard-based Monitoring Management', () => {
 
         // Check initial status
         const statusElement = firstWebsite.locator('[data-testid="website-status"]');
-        await expect(statusElement).toHaveAttribute('data-status', 'up');
+        await expect(statusElement).toHaveAttribute('data-status', 'online');
 
         // Click pause button
         const pauseButton = firstWebsite.locator('[data-testid="pause-website-btn"]');
@@ -135,7 +135,7 @@ test.describe('User Story 5: Dashboard-based Monitoring Management', () => {
         await resumeButton.click();
 
         // Check that status changes back to active
-        await expect(statusElement).toHaveAttribute('data-status', 'up');
+        await expect(statusElement).toHaveAttribute('data-status', 'online');
 
         // Check that resume button changes back to pause button
         await firstWebsite.hover();
@@ -242,7 +242,7 @@ test.describe('User Story 5: Dashboard-based Monitoring Management', () => {
         const resumeButton = firstWebsite.locator('[data-testid="resume-website-btn"]');
         await resumeButton.click();
 
-        await expect(statusElement).toHaveAttribute('data-status', 'up');
+        await expect(statusElement).toHaveAttribute('data-status', 'online');
 
         // Verify monitoring resumes
         const resumeResponse = await page.request.get(`/api/website/${websiteId}/status`);
