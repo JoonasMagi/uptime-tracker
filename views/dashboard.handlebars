@@ -14,7 +14,7 @@
     <main class="dashboard-content">
         <div data-testid="websites-list" class="websites-list">
             {{#each websites}}
-            <div data-testid="website-item" class="website-item" data-status="{{this.status}}">
+            <div data-testid="website-item" class="website-item clickable" data-status="{{this.status}}" data-website-id="{{this.id}}">
                 <div class="website-info">
                     <h3 data-testid="website-name" class="website-name">{{this.name}}</h3>
                     <p data-testid="website-url" class="website-url">{{this.url}}</p>

@@ -39,12 +39,12 @@ Uptime tracker application for monitoring website availability, developed using 
 **As a user**, I want to see uptime statistics for a specific site over different time periods so that I can assess its reliability.
 
 ### Acceptance Criteria:
-- [ ] I can select a site by clicking to view its details
-- [ ] Uptime percentage is displayed for the last 24 hours, 7 days, and 30 days
-- [ ] Average response time for the selected period is shown
-- [ ] Number and total duration of outages are displayed
-- [ ] Statistics are calculated correctly based on monitoring data
-- [ ] Data is presented in a clearly readable format
+- [x] I can select a site by clicking to view its details
+- [x] Uptime percentage is displayed for the last 24 hours, 7 days, and 30 days
+- [x] Average response time for the selected period is shown
+- [x] Number and total duration of outages are displayed
+- [x] Statistics are calculated correctly based on monitoring data
+- [x] Data is presented in a clearly readable format
 
 ---
 
