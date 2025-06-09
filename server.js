@@ -19,6 +19,71 @@ app.engine('handlebars', engine({
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
+// In-memory storage for websites
+let websites = [];
+let nextId = 1;
+
+// Initialize with some mock data for testing
+function initializeMockData() {
+  websites = [
+    {
+      id: 1,
+      name: 'Google',
+      url: 'https://google.com',
+      interval: '5min',
+      description: 'Search engine',
+      status: 'online',
+      statusText: 'ONLINE',
+      lastCheck: '12:34:56',
+      responseTime: '120 ms',
+      createdAt: new Date()
+    },
+    {
+      id: 2,
+      name: 'Example Site',
+      url: 'https://example.com',
+      interval: '15min',
+      description: 'Example website',
+      status: 'offline',
+      statusText: 'OFFLINE',
+      lastCheck: '12:33:45',
+      responseTime: 'N/A',
+      createdAt: new Date()
+    },
+    {
+      id: 3,
+      name: 'Test Website',
+      url: 'https://test.example.org',
+      interval: '30min',
+      description: 'Test site',
+      status: 'unknown',
+      statusText: 'UNKNOWN',
+      lastCheck: 'Mitte kunagi',
+      responseTime: 'N/A',
+      createdAt: new Date()
+    }
+  ];
+  nextId = 4;
+}
+
+// Initialize mock data
+initializeMockData();
+
+// Helper function to get current timestamp
+function getCurrentTime() {
+  return new Date().toLocaleTimeString('et-EE', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+}
+
+// Helper function to simulate website status check (for demo purposes)
+function getRandomStatus() {
+  const statuses = ['online', 'offline', 'unknown'];
+  return statuses[Math.floor(Math.random() * statuses.length)];
+}
+
 // Middleware
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
@@ -58,6 +123,23 @@ app.post('/add-website', (req, res) => {
     });
   }
 
+  // Save the website to in-memory storage
+  const status = getRandomStatus();
+  const newWebsite = {
+    id: nextId++,
+    name: name,
+    url: url,
+    interval: interval || '5min',
+    description: description || '',
+    status: status,
+    statusText: status.toUpperCase(),
+    lastCheck: getCurrentTime(),
+    responseTime: status === 'online' ? `${Math.floor(Math.random() * 500) + 50} ms` : 'N/A',
+    createdAt: new Date()
+  };
+
+  websites.push(newWebsite);
+
   // Success - redirect to success page or dashboard
   res.redirect('/success?name=' + encodeURIComponent(name) + '&url=' + encodeURIComponent(url));
 });
@@ -72,11 +154,25 @@ app.get('/success', (req, res) => {
   });
 });
 
+// Test route to reset data (for testing purposes)
+app.post('/reset-data', (req, res) => {
+  initializeMockData();
+  res.json({ message: 'Data reset to mock data' });
+});
+
+// Route to clear all data (for testing empty state)
+app.post('/clear-data', (req, res) => {
+  websites = [];
+  nextId = 1;
+  res.json({ message: 'All data cleared' });
+});
+
 // Dashboard route
 app.get('/dashboard', (req, res) => {
   const { empty } = req.query;
 
-  if (empty === 'true') {
+  // If no websites are stored, show empty state
+  if (empty === 'true' || websites.length === 0) {
     return res.render('dashboard', {
       title: 'Dashboard - Monitooring',
       empty: true,
@@ -84,40 +180,10 @@ app.get('/dashboard', (req, res) => {
     });
   }
 
-  // Mock data for testing - in real implementation this would come from database
-  const mockWebsites = [
-    {
-      id: 1,
-      name: 'Google',
-      url: 'https://google.com',
-      status: 'online',
-      statusText: 'ONLINE',
-      lastCheck: '12:34:56',
-      responseTime: '120 ms'
-    },
-    {
-      id: 2,
-      name: 'Example Site',
-      url: 'https://example.com',
-      status: 'offline',
-      statusText: 'OFFLINE',
-      lastCheck: '12:33:45',
-      responseTime: 'N/A'
-    },
-    {
-      id: 3,
-      name: 'Test Website',
-      url: 'https://test.example.org',
-      status: 'unknown',
-      statusText: 'UNKNOWN',
-      lastCheck: 'Mitte kunagi',
-      responseTime: 'N/A'
-    }
-  ];
-
+  // Show real websites data
   res.render('dashboard', {
     title: 'Dashboard - Monitooring',
-    websites: mockWebsites,
+    websites: websites,
     empty: false,
     isDashboard: true
   });
