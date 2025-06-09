@@ -201,7 +201,7 @@ function isValidUrl(string) {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}/dashboard`);
 });
 
 module.exports = app;
