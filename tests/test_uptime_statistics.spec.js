@@ -157,11 +157,13 @@ test.describe('User Story 3: Uptime Statistics Viewing', () => {
     
     // Check for proper section organization
     const sections = page.locator('[data-testid="statistics-section"]');
-    await expect(sections).toHaveCount.greaterThan(1);
+    const sectionCount = await sections.count();
+    expect(sectionCount).toBeGreaterThan(1);
     
     // Check for readable labels on all statistics
     const labels = page.locator('[data-testid="stat-label"]');
-    await expect(labels).toHaveCount.greaterThan(3);
+    const labelCount = await labels.count();
+    expect(labelCount).toBeGreaterThan(3);
     
     // Check for proper formatting of time periods
     const timePeriods = page.locator('[data-testid="time-period"]');
