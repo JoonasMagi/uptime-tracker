@@ -16,6 +16,12 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('User Story 2: Realtime Status Monitoring', () => {
   
+  // Reset data before each test to ensure consistent state
+  test.beforeEach(async ({ page }) => {
+    // Reset to known mock data state
+    await page.request.post('/reset-data');
+  });
+  
   // Criterion 1: Kuvatakse kõik monitooritavad saidid loendina
   test('displays all monitored websites in a list', async ({ page }) => {
     await page.goto('/dashboard');
