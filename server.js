@@ -56,9 +56,9 @@ function initializeMockData() {
       id: 1,
       name: 'Google',
       url: 'https://google.com',
-      interval: '5min',
+      interval: '5',
       description: 'Search engine',
-      status: 'online',
+      status: 'up',
       statusText: 'ONLINE',
       lastCheck: '12:34:56',
       responseTime: '120 ms',
@@ -68,9 +68,9 @@ function initializeMockData() {
       id: 2,
       name: 'Example Site',
       url: 'https://example.com',
-      interval: '15min',
+      interval: '15',
       description: 'Example website',
-      status: 'offline',
+      status: 'down',
       statusText: 'OFFLINE',
       lastCheck: '12:33:45',
       responseTime: 'N/A',
@@ -80,7 +80,7 @@ function initializeMockData() {
       id: 3,
       name: 'Test Website',
       url: 'https://test.example.org',
-      interval: '30min',
+      interval: '30',
       description: 'Test site',
       status: 'unknown',
       statusText: 'UNKNOWN',
@@ -108,16 +108,14 @@ function initializeMockData() {
   // Add some mock monitoring history for statistics testing
   const now = new Date();
   websites.forEach(website => {
-    monitoringHistory[website.id] = [];
-
-    // Generate monitoring history for the last 30 days
+    monitoringHistory[website.id] = [];    // Generate monitoring history for the last 30 days
     for (let i = 0; i < 30 * 24; i++) { // 30 days * 24 hours
       const timestamp = new Date(now.getTime() - (i * 60 * 60 * 1000)); // Each hour
       const isOnline = Math.random() > 0.05; // 95% uptime
 
       monitoringHistory[website.id].push({
         timestamp: timestamp,
-        status: isOnline ? 'online' : 'offline',
+        status: isOnline ? 'up' : 'down',
         responseTime: isOnline ? Math.floor(Math.random() * 500) + 50 : 0,
         statusCode: isOnline ? 200 : 0,
         success: isOnline,
@@ -156,7 +154,7 @@ function detectSiteDown(siteId, status) {
   console.log(`🔍 EnabledSites:`, notificationSettings.enabledSites);
   console.log(`🔍 Email configured:`, notificationSettings.email);
 
-  if (status === 'offline') {
+  if (status === 'offline' || status === 'down') {
     // Don't increment if already at threshold (from simulation)
     if (!siteFailureCounts[siteId] || siteFailureCounts[siteId] < notificationSettings.consecutiveFailures) {
       siteFailureCounts[siteId] = (siteFailureCounts[siteId] || 0) + 1;
@@ -175,7 +173,7 @@ function detectSiteDown(siteId, status) {
         lastNotificationStatus[siteId] = 'down';
       }
     }
-  } else if (status === 'online') {
+  } else if (status === 'online' || status === 'up') {
     console.log(`🟢 Processing recovery for site ${siteId}`);
     console.log(`🟢 Failure count check: ${siteFailureCounts[siteId]} >= ${notificationSettings.consecutiveFailures}: ${siteFailureCounts[siteId] >= notificationSettings.consecutiveFailures}`);
     console.log(`🟢 Last status check: ${lastNotificationStatus[siteId]} === 'down': ${lastNotificationStatus[siteId] === 'down'}`);
@@ -268,9 +266,8 @@ function calculateStatistics(websiteId, period = '24h') {
       period
     };
   }
-
   const totalChecks = periodData.length;
-  const onlineChecks = periodData.filter(record => record.status === 'online').length;
+  const onlineChecks = periodData.filter(record => record.status === 'up' || record.status === 'online').length;
   const uptimePercentage = totalChecks > 0 ? ((onlineChecks / totalChecks) * 100).toFixed(1) : 0;
 
   // Calculate average response time
@@ -282,9 +279,8 @@ function calculateStatistics(websiteId, period = '24h') {
   // Calculate outages
   const outages = [];
   let currentOutage = null;
-
   periodData.forEach(record => {
-    if (record.status === 'offline') {
+    if (record.status === 'down' || record.status === 'offline') {
       if (!currentOutage) {
         currentOutage = {
           start: record.timestamp,
@@ -332,10 +328,9 @@ async function checkWebsite(website) {
       }
     });
 
-    const responseTime = Date.now() - startTime;
-    const checkResult = {
+    const responseTime = Date.now() - startTime;    const checkResult = {
       timestamp: new Date(),
-      status: 'online',
+      status: 'up',
       responseTime: responseTime,
       statusCode: response.status,
       success: true
@@ -350,10 +345,8 @@ async function checkWebsite(website) {
     // Keep only last 1000 results per site
     if (monitoringHistory[website.id].length > 1000) {
       monitoringHistory[website.id] = monitoringHistory[website.id].slice(0, 1000);
-    }
-
-    // Update website status
-    website.status = 'online';
+    }    // Update website status
+    website.status = 'up';
     website.statusText = 'ONLINE';
     website.lastCheck = getCurrentTime();
     website.responseTime = `${responseTime} ms`;
@@ -364,10 +357,9 @@ async function checkWebsite(website) {
     console.log(`✅ ${website.name} (${website.url}) - Online - ${responseTime}ms`);
 
   } catch (error) {
-    const responseTime = Date.now() - startTime;
-    const checkResult = {
+    const responseTime = Date.now() - startTime;    const checkResult = {
       timestamp: new Date(),
-      status: 'offline',
+      status: 'down',
       responseTime: responseTime,
       error: error.message,
       success: false
@@ -382,32 +374,21 @@ async function checkWebsite(website) {
     // Keep only last 1000 results per site
     if (monitoringHistory[website.id].length > 1000) {
       monitoringHistory[website.id] = monitoringHistory[website.id].slice(0, 1000);
-    }
-
-    // Update website status
-    website.status = 'offline';
+    }    // Update website status
+    website.status = 'down';
     website.statusText = 'OFFLINE';
     website.lastCheck = getCurrentTime();
-    website.responseTime = 'N/A';
-
-    // Increment failure count and trigger down notification if needed
-    detectSiteDown(website.id, 'offline');
+    website.responseTime = 'N/A';    // Increment failure count and trigger down notification if needed
+    detectSiteDown(website.id, 'down');
 
     console.log(`❌ ${website.name} (${website.url}) - Offline - Error: ${error.message}`);
   }
 }
 
 function startMonitoring(website) {
-  // Convert interval to milliseconds
-  const intervalMap = {
-    '1min': 60000,
-    '5min': 300000,
-    '15min': 900000,
-    '30min': 1800000,
-    '1hour': 3600000
-  };
-
-  const intervalMs = intervalMap[website.interval] || 300000; // Default to 5 minutes
+  // Convert interval from minutes to milliseconds
+  const intervalMinutes = parseInt(website.interval) || 5;
+  const intervalMs = intervalMinutes * 60000; // Convert to milliseconds
 
   // Stop existing monitor if any
   if (activeMonitors.has(website.id)) {
@@ -424,7 +405,7 @@ function startMonitoring(website) {
 
   activeMonitors.set(website.id, intervalId);
 
-  console.log(`🔄 Started monitoring ${website.name} every ${website.interval}`);
+  console.log(`🔄 Started monitoring ${website.name} every ${website.interval} minutes`);
 }
 
 function stopMonitoring(websiteId) {
@@ -487,16 +468,15 @@ app.post('/add-website', (req, res) => {
       formData: { url, name, interval, description }
     });
   }
-
   // Save the website to in-memory storage
   const status = getRandomStatus();
   const newWebsite = {
     id: nextId++,
     name: name,
     url: url,
-    interval: interval || '5min',
+    interval: interval || '5',
     description: description || '',
-    status: status,
+    status: status === 'online' ? 'up' : status === 'offline' ? 'down' : 'unknown',
     statusText: status.toUpperCase(),
     lastCheck: getCurrentTime(),
     responseTime: status === 'online' ? `${Math.floor(Math.random() * 500) + 50} ms` : 'N/A',
@@ -525,19 +505,7 @@ app.get('/success', (req, res) => {
 // Test route to reset data (for testing purposes)
 app.post('/reset-data', (req, res) => {
   initializeMockData();
-  statisticsCache = {}; // Clear statistics cache
-
-  // Reset notification state for testing
-  notificationSettings = {
-    email: '',
-    consecutiveFailures: 3,
-    enabledSites: []
-  };
-  notificationLog = [];
-  siteFailureCounts = {};
-  lastNotificationStatus = {};
-
-  res.json({ message: 'Data reset to mock data' });
+  res.json({ success: true, message: 'Data reset successfully' });
 });
 
 // Route to clear all data (for testing empty state)
@@ -670,6 +638,128 @@ app.get('/notifications/log', (req, res) => {
   });
 });
 
+// API endpoints for website management
+
+// Get website status
+app.get('/api/website/:id/status', (req, res) => {
+  const websiteId = parseInt(req.params.id);
+  const website = websites.find(w => w.id === websiteId);
+
+  if (!website) {
+    return res.status(404).json({ error: 'Website not found' });
+  }
+
+  res.json({
+    id: website.id,
+    name: website.name,
+    status: website.status,
+    isActive: website.status !== 'paused'
+  });
+});
+
+// Update website (name and interval)
+app.put('/api/website/:id', (req, res) => {
+  const websiteId = parseInt(req.params.id);
+  const { name, checkInterval } = req.body;
+  
+  const website = websites.find(w => w.id === websiteId);
+  
+  if (!website) {
+    return res.status(404).json({ error: 'Website not found' });
+  }
+
+  // Update website properties
+  if (name) {
+    website.name = name;
+  }
+    if (checkInterval) {
+    // Store interval as numeric string (minutes)
+    website.interval = checkInterval.toString();
+    
+    // Restart monitoring with new interval if not paused
+    if (website.status !== 'paused') {
+      stopMonitoring(websiteId);
+      startMonitoring(website);
+    }
+  }
+
+  res.json({
+    success: true,
+    website: website
+  });
+});
+
+// Pause website monitoring
+app.post('/api/website/:id/pause', (req, res) => {
+  const websiteId = parseInt(req.params.id);
+  const website = websites.find(w => w.id === websiteId);
+
+  if (!website) {
+    return res.status(404).json({ error: 'Website not found' });
+  }
+
+  // Stop monitoring
+  stopMonitoring(websiteId);
+  
+  // Update status
+  website.status = 'paused';
+  website.statusText = 'Peatatud';
+
+  res.json({
+    success: true,
+    message: 'Monitoring paused',
+    website: website
+  });
+});
+
+// Resume website monitoring
+app.post('/api/website/:id/resume', (req, res) => {
+  const websiteId = parseInt(req.params.id);
+  const website = websites.find(w => w.id === websiteId);
+
+  if (!website) {
+    return res.status(404).json({ error: 'Website not found' });
+  }
+
+  // Resume monitoring
+  website.status = 'up'; // Will be updated by the first check
+  website.statusText = 'ONLINE';
+  
+  startMonitoring(website);
+
+  res.json({
+    success: true,
+    message: 'Monitoring resumed',
+    website: website
+  });
+});
+
+// Delete website
+app.delete('/api/website/:id', (req, res) => {
+  const websiteId = parseInt(req.params.id);
+  const websiteIndex = websites.findIndex(w => w.id === websiteId);
+
+  if (websiteIndex === -1) {
+    return res.status(404).json({ error: 'Website not found' });
+  }
+
+  // Stop monitoring
+  stopMonitoring(websiteId);
+  
+  // Remove from websites array
+  websites.splice(websiteIndex, 1);
+  
+  // Clean up monitoring history
+  delete monitoringHistory[websiteId];
+  delete siteFailureCounts[websiteId];
+  delete lastNotificationStatus[websiteId];
+
+  res.json({
+    success: true,
+    message: 'Website deleted successfully'
+  });
+});
+
 // API endpoint for simulating downtime (for testing)
 app.post('/api/test/simulate-downtime', (req, res) => {
   const { siteId, consecutiveFailures, timestamp } = req.body;
@@ -689,9 +779,8 @@ app.post('/api/test/simulate-downtime', (req, res) => {
   if (!site) {
     return res.status(404).json({ error: 'Site not found' });
   }
-
   // Update site status to offline
-  site.status = 'offline';
+  site.status = 'down';
   site.statusText = 'OFFLINE';
   site.lastCheck = getCurrentTime();
   site.responseTime = 'N/A';
@@ -700,14 +789,13 @@ app.post('/api/test/simulate-downtime', (req, res) => {
   if (!monitoringHistory[site.id]) {
     monitoringHistory[site.id] = [];
   }
-
   // Add consecutive failure entries
   const failures = consecutiveFailures || notificationSettings.consecutiveFailures;
   for (let i = 0; i < failures; i++) {
     const checkTime = new Date(Date.now() - (i * 60000)); // 1 minute apart
     monitoringHistory[site.id].unshift({
       timestamp: checkTime,
-      status: 'offline',
+      status: 'down',
       responseTime: 0,
       error: 'Simulated downtime',
       success: false
@@ -731,9 +819,8 @@ app.post('/api/test/simulate-downtime', (req, res) => {
   console.log(`🔧 Threshold: ${notificationSettings.consecutiveFailures}`);
   console.log(`🔧 Enabled sites: ${notificationSettings.enabledSites}`);
   console.log(`🔧 Email: ${notificationSettings.email}`);
-
   // Trigger notification detection
-  detectSiteDown(site.id, 'offline');
+  detectSiteDown(site.id, 'down');
 
   res.json({
     success: true,
@@ -762,9 +849,8 @@ app.post('/api/test/simulate-recovery', (req, res) => {
   if (!site) {
     return res.status(404).json({ error: 'Site not found' });
   }
-
   // Update site status to online
-  site.status = 'online';
+  site.status = 'up';
   site.statusText = 'ONLINE';
   site.lastCheck = getCurrentTime();
   const responseTime = Math.floor(Math.random() * 500) + 50;
@@ -774,10 +860,9 @@ app.post('/api/test/simulate-recovery', (req, res) => {
   if (!monitoringHistory[site.id]) {
     monitoringHistory[site.id] = [];
   }
-
   monitoringHistory[site.id].unshift({
     timestamp: new Date(),
-    status: 'online',
+    status: 'up',
     responseTime: responseTime,
     statusCode: 200,
     success: true

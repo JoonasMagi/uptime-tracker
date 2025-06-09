@@ -12,12 +12,12 @@
     </header>
 
     <main class="dashboard-content">
-        <div data-testid="websites-list" class="websites-list">
-            {{#each websites}}
+        <div data-testid="websites-list" class="websites-list">            {{#each websites}}
             <div data-testid="website-item" class="website-item clickable" data-status="{{this.status}}" data-website-id="{{this.id}}">
                 <div class="website-info">
                     <h3 data-testid="website-name" class="website-name">{{this.name}}</h3>
                     <p data-testid="website-url" class="website-url">{{this.url}}</p>
+                    <div data-testid="check-interval-info" class="interval-info">{{this.interval}} min</div>
                 </div>
 
                 <div class="website-status-info">
@@ -38,10 +38,70 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Management Controls -->
+                <div data-testid="management-controls" class="management-controls">
+                    <button data-testid="edit-website-btn" class="btn btn-sm btn-secondary" title="Edit website">
+                        ✏️ Muuda
+                    </button>
+                    {{#if (eq this.status 'paused')}}
+                    <button data-testid="resume-website-btn" class="btn btn-sm btn-success" data-id="{{this.id}}" title="Resume monitoring">
+                        ▶️ Jätka
+                    </button>
+                    {{else}}
+                    <button data-testid="pause-website-btn" class="btn btn-sm btn-warning" data-id="{{this.id}}" title="Pause monitoring">
+                        ⏸️ Peata
+                    </button>
+                    {{/if}}
+                    <button data-testid="delete-website-btn" class="btn btn-sm btn-danger" data-id="{{this.id}}" title="Delete website">
+                        🗑️ Kustuta
+                    </button>
+                </div>
+
+                <!-- Edit Form (initially hidden) -->
+                <div data-testid="edit-form" class="edit-form hidden">
+                    <div class="edit-form-content">
+                        <h4>Muuda veebisaiti</h4>
+                        <div class="form-group">
+                            <label for="edit-name-{{this.id}}">Nimi:</label>
+                            <input data-testid="edit-name-input" type="text" id="edit-name-{{this.id}}" value="{{this.name}}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-interval-{{this.id}}">Kontrollimise intervall:</label>
+                            <select data-testid="edit-interval-select" id="edit-interval-{{this.id}}" class="form-control">
+                                <option value="1" {{#if (eq this.interval "1")}}selected{{/if}}>1 min</option>
+                                <option value="5" {{#if (eq this.interval "5")}}selected{{/if}}>5 min</option>
+                                <option value="15" {{#if (eq this.interval "15")}}selected{{/if}}>15 min</option>
+                                <option value="30" {{#if (eq this.interval "30")}}selected{{/if}}>30 min</option>
+                                <option value="60" {{#if (eq this.interval "60")}}selected{{/if}}>1 tund</option>
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button data-testid="save-changes-btn" class="btn btn-primary" data-id="{{this.id}}">Salvesta</button>
+                            <button data-testid="cancel-edit-btn" class="btn btn-secondary">Tühista</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            {{/each}}
-        </div>
+            {{/each}}        </div>
     </main>
+
+    <!-- Success Message -->
+    <div data-testid="success-message" class="success-message hidden">
+        Success message will appear here
+    </div>
+
+    <!-- Delete Confirmation Dialog -->
+    <div data-testid="delete-confirmation-dialog" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 data-testid="delete-dialog-title">Kustutamise kinnitus</h3>
+            <p data-testid="delete-dialog-message">Kas olete kindel, et soovite selle veebisaidi monitoorimise kustutada?</p>
+            <div class="modal-actions">
+                <button data-testid="confirm-delete-btn" class="btn btn-danger">Jah, kustuta</button>
+                <button data-testid="cancel-delete-btn" class="btn btn-secondary">Tühista</button>
+            </div>
+        </div>
+    </div>
 </div>
 {{else}}
 <div class="dashboard-container">
@@ -64,5 +124,144 @@
     </main>
 </div>
 {{/unless}}
+
+<style>
+/* Management Controls */
+.management-controls {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 10;
+}
+
+.website-item:hover .management-controls {
+    display: flex;
+}
+
+.website-item {
+    position: relative;
+}
+
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 12px;
+    min-width: 70px;
+}
+
+.btn-secondary { background-color: #6c757d; color: white; }
+.btn-success { background-color: #28a745; color: white; }
+.btn-warning { background-color: #ffc107; color: black; }
+.btn-danger { background-color: #dc3545; color: white; }
+
+.btn:hover {
+    opacity: 0.8;
+}
+
+/* Edit Form */
+.edit-form {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    z-index: 20;
+}
+
+.edit-form-content {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 90%;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+/* Success Message */
+.success-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    padding: 10px 20px;
+    z-index: 1001;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Interval info */
+.interval-info {
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
+}
+
+/* Status styles for paused */
+.status-paused {
+    background-color: #6c757d;
+    color: white;
+}
+
+[data-status="paused"] {
+    opacity: 0.7;
+}
+</style>
 
 <script src="/js/dashboard.js"></script>
