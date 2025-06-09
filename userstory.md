@@ -10,12 +10,12 @@ Uptime tracker rakendus veebisaitide kättesaadavuse monitoorimiseks, arendatav 
 **Kasutajalugu:** Kasutajana tahan lisada veebisaiti monitooringusse, et saaksin jälgida selle kättesaadavust.
 
 ### Aktsepteerimiskriteeriumid:
-- [ ] Saan sisestada veebisaidi URL-i (nt. https://example.com)
-- [ ] Saan määrata kontrolli intervalli (1 min, 5 min, 15 min, 30 min, 1 tund)
-- [ ] Saan anda saidile nime/kirjelduse
-- [ ] Süsteem valideerib URL-i formaadi õigsust
-- [ ] Saan salvestada monitooringu konfiguratsiooni
-- [ ] Kuvatakse kinnitus monitooringu edukast lisamisest
+- [x] Saan sisestada veebisaidi URL-i (nt. https://example.com)
+- [x] Saan määrata kontrolli intervalli (1 min, 5 min, 15 min, 30 min, 1 tund)
+- [x] Saan anda saidile nime/kirjelduse
+- [x] Süsteem valideerib URL-i formaadi õigsust
+- [x] Saan salvestada monitooringkonfiguratsiooniu 
+- [x] Kuvatakse kinnitus monitooringu edukast lisamisest
 
 ---
 

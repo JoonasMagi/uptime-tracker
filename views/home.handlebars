@@ -1,7 +1,50 @@
 <div class="container">
     <h2>Lisa uus veebisait monitooringusse</h2>
 
-    <!-- TDD Red phase - minimal content, tests should fail -->
-    <p>Siin tuleb vorm veebisaidi lisamiseks...</p>
+    <form data-testid="add-website-form" method="POST" action="/add-website">
+        <div>
+            <label for="url">Veebisaidi URL:</label>
+            <input id="url" name="url" type="url" data-testid="url-input"
+                placeholder="Enter website URL (e.g., https://example.com)"
+                value="{{#if formData}}{{formData.url}}{{/if}}" required />
+            <div data-testid="url-error"
+                style="display: {{#if errors.urlInvalid}}block{{else}}none{{/if}}; color: red;">
+                Palun sisestage kehtiv URL (nt. https://example.com)
+            </div>
+            <div data-testid="url-required-error"
+                style="display: {{#if errors.urlRequired}}block{{else}}none{{/if}}; color: red;">
+                URL on kohustuslik
+            </div>
+        </div>
 
+        <div>
+            <label for="website-name">Veebisaidi nimi:</label>
+            <input id="website-name" name="name" type="text" data-testid="website-name"
+                placeholder="Website name (e.g., My Blog)" value="{{#if formData}}{{formData.name}}{{/if}}" required />
+            <div data-testid="name-required-error"
+                style="display: {{#if errors.nameRequired}}block{{else}}none{{/if}}; color: red;">
+                Veebisaidi nimi on kohustuslik
+            </div>
+        </div>
+
+        <div>
+            <label for="interval">Kontrolli intervall:</label>
+            <select id="interval" name="interval" data-testid="interval-select" required>
+                <option value="1" {{#if (eq formData.interval "1" )}}selected{{/if}}>1 minut</option>
+                <option value="5" {{#if (eq formData.interval "5" )}}selected{{else}}{{#unless
+                    formData}}selected{{/unless}}{{/if}}>5 minutit</option>
+                <option value="15" {{#if (eq formData.interval "15" )}}selected{{/if}}>15 minutit</option>
+                <option value="30" {{#if (eq formData.interval "30" )}}selected{{/if}}>30 minutit</option>
+                <option value="60" {{#if (eq formData.interval "60" )}}selected{{/if}}>1 tund</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="description">Kirjeldus (valikuline):</label>
+            <textarea id="description" name="description" data-testid="website-description"
+                placeholder="Optional description" rows="3">{{#if formData}}{{formData.description}}{{/if}}</textarea>
+        </div>
+
+        <button type="submit" data-testid="add-website-btn">Lisa monitooringusse</button>
+    </form>
 </div>

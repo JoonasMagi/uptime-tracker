@@ -9,7 +9,12 @@ const PORT = process.env.PORT || 3000;
 app.engine('handlebars', engine({
   defaultLayout: 'main',
   layoutsDir: path.join(__dirname, 'views/layouts'),
-  partialsDir: path.join(__dirname, 'views/partials')
+  partialsDir: path.join(__dirname, 'views/partials'),
+  helpers: {
+    eq: function (a, b) {
+      return a === b;
+    }
+  }
 }));
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
@@ -26,6 +31,63 @@ app.get('/', (req, res) => {
     heading: 'Website Monitoring'
   });
 });
+
+// Handle form submission
+app.post('/add-website', (req, res) => {
+  const { url, name, interval, description } = req.body;
+
+  // Basic validation
+  const errors = {};
+
+  if (!url) {
+    errors.urlRequired = true;
+  } else if (!isValidUrl(url)) {
+    errors.urlInvalid = true;
+  }
+
+  if (!name) {
+    errors.nameRequired = true;
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return res.render('home', {
+      title: 'Uptime Tracker',
+      heading: 'Website Monitoring',
+      errors,
+      formData: { url, name, interval, description }
+    });
+  }
+
+  // Success - redirect to success page or dashboard
+  res.redirect('/success?name=' + encodeURIComponent(name) + '&url=' + encodeURIComponent(url));
+});
+
+// Success page
+app.get('/success', (req, res) => {
+  const { name, url } = req.query;
+  res.render('success', {
+    title: 'Monitoring Added',
+    websiteName: name,
+    websiteUrl: url
+  });
+});
+
+// Dashboard (for redirect test)
+app.get('/dashboard', (req, res) => {
+  res.render('dashboard', {
+    title: 'Dashboard'
+  });
+});
+
+// Helper function to validate URL
+function isValidUrl(string) {
+  try {
+    const url = new URL(string);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch (_) {
+    return false;
+  }
+}
 
 // Start server
 app.listen(PORT, () => {
