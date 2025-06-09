@@ -82,7 +82,8 @@ test.describe('User Story 4: Site Down Notifications', () => {
     
     // Get all site checkboxes
     const siteCheckboxes = page.locator('[data-testid="site-notification-checkbox"]');
-    await expect(siteCheckboxes).toHaveCount.greaterThan(0);
+    const checkboxCount = await siteCheckboxes.count();
+    expect(checkboxCount).toBeGreaterThan(0);
     
     // Select first and third sites (if available)
     await siteCheckboxes.first().check();
@@ -228,8 +229,8 @@ test.describe('User Story 4: Site Down Notifications', () => {
     const downNotifications = page.locator('[data-testid="notification-content"]:has-text("down")');
     const recoveryNotifications = page.locator('[data-testid="notification-content"]:has-text("recovered")');
     
-    await expect(downNotifications).toHaveCount.greaterThan(0);
-    await expect(recoveryNotifications).toHaveCount.greaterThan(0);
+    expect(await downNotifications.count()).toBeGreaterThan(0);
+    expect(await recoveryNotifications.count()).toBeGreaterThan(0);
     
     // Verify recovery notification contains site information
     const recoveryNotification = recoveryNotifications.first();
@@ -294,7 +295,7 @@ test.describe('User Story 4: Site Down Notifications', () => {
     const firstSiteNotifications = page.locator(`[data-testid="notification-content"]:has-text("${firstSiteName}")`);
     const secondSiteNotifications = page.locator(`[data-testid="notification-content"]:has-text("${secondSiteName}")`);
     
-    await expect(firstSiteNotifications).toHaveCount.greaterThan(0);
+    expect(await firstSiteNotifications.count()).toBeGreaterThan(0);
     await expect(secondSiteNotifications).toHaveCount(0);
   });
 });
