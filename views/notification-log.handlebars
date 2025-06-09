@@ -1,0 +1,188 @@
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <h1>Notification Log</h1>
+        <div class="dashboard-controls">
+            <a href="/dashboard" data-testid="back-to-dashboard" class="btn btn-secondary">Back to Dashboard</a>
+            <a href="/settings/notifications" data-testid="notification-settings-link"
+                class="btn btn-primary">Settings</a>
+        </div>
+    </header>
+
+    <main class="dashboard-content">
+        <div class="notification-log-container">
+            {{#if notifications}}
+            <div class="notifications-list">
+                {{#each notifications}}
+                <div class="notification-item" data-testid="notification-log-item"
+                    data-detection-time="{{this.detectionTime}}" data-notification-time="{{this.notificationTime}}">
+
+                    <div class="notification-header">
+                        <span class="notification-type {{this.type}}">
+                            {{#if (eq this.type 'down')}}🔴{{else}}🟢{{/if}}
+                            {{#if (eq this.type 'down')}}Site Down{{else}}Site Recovered{{/if}}
+                        </span>
+                        <span class="notification-time">{{this.timestamp}}</span>
+                    </div>
+
+                    <div class="notification-content" data-testid="notification-content">
+                        <div class="site-info">
+                            <strong>{{this.siteName}}</strong> - {{this.siteUrl}}
+                        </div>
+                        <div class="notification-message">
+                            {{this.message}}
+                        </div>
+                    </div>
+
+                    <div class="notification-metadata">
+                        <span class="metadata-item">Detection: {{this.detectionTime}}</span>
+                        <span class="metadata-item">Sent: {{this.notificationTime}}</span>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+            {{else}}
+            <div class="empty-state" data-testid="empty-notification-log">
+                <div class="empty-state-content">
+                    <h2>No notifications yet</h2>
+                    <p>Notifications will appear here when sites go down or recover.</p>
+                    <a href="/settings/notifications" class="btn btn-primary">Configure Notifications</a>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </main>
+</div>
+
+<style>
+    .notification-log-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .notifications-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .notification-item {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .notification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .notification-type {
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .notification-type.down {
+        background-color: #ffebee;
+        color: #c62828;
+    }
+
+    .notification-type.recovery {
+        background-color: #e8f5e8;
+        color: #2e7d32;
+    }
+
+    .notification-time {
+        font-size: 12px;
+        color: #666;
+    }
+
+    .notification-content {
+        margin-bottom: 15px;
+    }
+
+    .site-info {
+        font-size: 16px;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .notification-message {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .notification-metadata {
+        display: flex;
+        gap: 20px;
+        font-size: 12px;
+        color: #999;
+        border-top: 1px solid #eee;
+        padding-top: 10px;
+    }
+
+    .metadata-item {
+        display: flex;
+        align-items: center;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-state-content h2 {
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    .empty-state-content p {
+        color: #999;
+        margin-bottom: 30px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        background-color: #0066cc;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #0052a3;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: #545b62;
+    }
+</style>
+
+<script>
+    // Auto-refresh the notification log every 30 seconds
+    setInterval(() => {
+        window.location.reload();
+    }, 30000);
+</script>
