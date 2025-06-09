@@ -10,12 +10,12 @@ Uptime tracker application for monitoring website availability, developed using 
 **As a user**, I want to add a website to monitoring so that I can track its availability.
 
 ### Acceptance Criteria:
-- [ ] I can enter a website URL (e.g., https://example.com)
-- [ ] I can set the check interval (1 min, 5 min, 15 min, 30 min, 1 hour)
-- [ ] I can provide a name/description for the site
-- [ ] The system validates URL format correctness
-- [ ] I can save the monitoring configuration
-- [ ] A confirmation of successful monitoring addition is displayed
+- [x] I can enter a website URL (e.g., https://example.com)
+- [x] I can set the check interval (1 min, 5 min, 15 min, 30 min, 1 hour)
+- [x] I can provide a name/description for the site
+- [x] The system validates URL format correctness
+- [x] I can save the monitoring configuration
+- [x] A confirmation of successful monitoring addition is displayed
 
 ---
 
@@ -24,13 +24,13 @@ Uptime tracker application for monitoring website availability, developed using 
 **As a user**, I want to see the current status of all monitored sites so that I can quickly know what's working and what's not.
 
 ### Acceptance Criteria:
-- [ ] All monitored sites are displayed in a list
-- [ ] Current status is visible for each site (ONLINE/OFFLINE/UNKNOWN)
-- [ ] Last check time is displayed
-- [ ] Response time in milliseconds is shown
-- [ ] Online sites are marked in green
-- [ ] Offline sites are marked in red
-- [ ] The page auto-refreshes every 30 seconds
+- [x] All monitored sites are displayed in a list
+- [x] Current status is visible for each site (ONLINE/OFFLINE/UNKNOWN)
+- [x] Last check time is displayed
+- [x] Response time in milliseconds is shown
+- [x] Online sites are marked in green
+- [x] Offline sites are marked in red
+- [x] The page auto-refreshes every 30 seconds
 
 ---
 

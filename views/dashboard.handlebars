@@ -1,0 +1,68 @@
+{{#unless empty}}
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <h1>Monitooritavad veebisaidid</h1>
+        <div class="dashboard-controls">
+            <a href="/" data-testid="add-website-link" class="btn btn-primary">Lisa uus veebisait</a>
+            <div class="auto-refresh-info">
+                <span data-testid="auto-refresh-indicator">Automaatne uuendamine: 30s</span>
+                <span class="timer" data-testid="refresh-timer">30</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-content">
+        <div data-testid="websites-list" class="websites-list">
+            {{#each websites}}
+            <div data-testid="website-item" class="website-item" data-status="{{this.status}}">
+                <div class="website-info">
+                    <h3 data-testid="website-name" class="website-name">{{this.name}}</h3>
+                    <p data-testid="website-url" class="website-url">{{this.url}}</p>
+                </div>
+
+                <div class="website-status-info">
+                    <div class="status-container">
+                        <span data-testid="website-status" class="status status-{{this.status}}"
+                            data-status="{{this.status}}">{{this.statusText}}</span>
+                    </div>
+
+                    <div class="metrics">
+                        <div class="metric" data-testid="last-check-time">
+                            <span class="metric-label">Viimane kontroll:</span>
+                            <span class="metric-value">{{this.lastCheck}}</span>
+                        </div>
+
+                        <div class="metric" data-testid="response-time">
+                            <span class="metric-label">Vastuse aeg:</span>
+                            <span class="metric-value">{{this.responseTime}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </main>
+</div>
+{{else}}
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <h1>Monitooritavad veebisaidid</h1>
+        <div class="dashboard-controls">
+            <a href="/" data-testid="add-website-link" class="btn btn-primary">Lisa uus veebisait</a>
+        </div>
+    </header>
+
+    <main class="dashboard-content">
+        <div data-testid="empty-state" class="empty-state">
+            <div class="empty-state-content">
+                <h2>Pole veel ühtegi veebisaiti lisatud</h2>
+                <p>Alusta monitoorimist, lisades esimese veebisaidi</p>
+                <a href="/" data-testid="add-first-website-btn" class="btn btn-primary btn-large">Lisa esimene
+                    veebisait</a>
+            </div>
+        </div>
+    </main>
+</div>
+{{/unless}}
+
+<script src="/js/dashboard.js"></script>
