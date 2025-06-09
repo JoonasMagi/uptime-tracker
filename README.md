@@ -1,101 +1,103 @@
-# Uptime Tracker - Kasutajalood
+# Uptime Tracker - User Stories
 
-## Projekti ülevaade
-Uptime tracker rakendus veebisaitide kättesaadavuse monitoorimiseks, arendatav TDD (Test-Driven Development) meetodil.
-
----
-
-## 1. Veebisaidi monitooringu lisamine
-
-**Kasutajalugu:** Kasutajana tahan lisada veebisaiti monitooringusse, et saaksin jälgida selle kättesaadavust.
-
-### Aktsepteerimiskriteeriumid:
-- [ ] Saan sisestada veebisaidi URL-i (nt. https://example.com)
-- [ ] Saan määrata kontrolli intervalli (1 min, 5 min, 15 min, 30 min, 1 tund)
-- [ ] Saan anda saidile nime/kirjelduse
-- [ ] Süsteem valideerib URL-i formaadi õigsust
-- [ ] Saan salvestada monitooringu konfiguratsiooni
-- [ ] Kuvatakse kinnitus monitooringu edukast lisamisest
+## Project Overview
+Uptime tracker application for monitoring website availability, developed using TDD (Test-Driven Development) methodology.
 
 ---
 
-## 2. Reaalajas staatuse vaatamine
+## User Story #1: Adding Website Monitoring
 
-**Kasutajalugu:** Kasutajana tahan näha kõigi monitooritavate saitide praegust staatust, et teaksin kiiresti, mis on töökorras ja mis mitte.
+**As a user**, I want to add a website to monitoring so that I can track its availability.
 
-### Aktsepteerimiskriteeriumid:
-- [ ] Kuvatakse kõik monitooritavad saidid loendina
-- [ ] Iga saidi juures on nähtav praegune staatus (ONLINE/OFFLINE/UNKNOWN)
-- [ ] Kuvatakse viimase kontrolli aeg
-- [ ] Kuvatakse vastuse aeg millisekundites
-- [ ] Online saidid on roheliselt märgitud
-- [ ] Offline saidid on punaselt märgitud
-- [ ] Leht uueneb automaatselt iga 30 sekundi järel
-
----
-
-## 3. Uptime statistika vaatamine
-
-**Kasutajalugu:** Kasutajana tahan näha konkreetse saidi uptime statistikat erinevate ajaperioodide kohta, et saaksin hinnata selle usaldusväärsust.
-
-### Aktsepteerimiskriteeriumid:
-- [ ] Saan valida saidi klõpsates selle detailvaatesse
-- [ ] Kuvatakse uptime protsent viimase 24 tunni, 7 päeva ja 30 päeva kohta
-- [ ] Kuvatakse keskmine vastuse aeg valitud perioodil
-- [ ] Kuvatakse katkestuste arv ja kogukestus
-- [ ] Statistika arvutatakse õigesti monitooringu andmete põhjal
-- [ ] Andmed kuvatakse selgelt loetavas formaadis
+### Acceptance Criteria:
+- [ ] I can enter a website URL (e.g., https://example.com)
+- [ ] I can set the check interval (1 min, 5 min, 15 min, 30 min, 1 hour)
+- [ ] I can provide a name/description for the site
+- [ ] The system validates URL format correctness
+- [ ] I can save the monitoring configuration
+- [ ] A confirmation of successful monitoring addition is displayed
 
 ---
 
-## 4. Sisenematu saidi teavitused
+## User Story #2: Real-time Status Viewing
 
-**Kasutajalugu:** Kasutajana tahan saada teavitust, kui mõni monitooritav sait muutub kättesaamatuks, et saaksin kiiresti reageerida.
+**As a user**, I want to see the current status of all monitored sites so that I can quickly know what's working and what's not.
 
-### Aktsepteerimiskriteeriumid:
-- [ ] Süsteem tuvastab, kui sait ei vasta 3 järjestikuse kontrolli jooksul
-- [ ] Saan seadistada e-maili aadressi teavituste saamiseks
-- [ ] Saan valida, milliste saitide kohta teavitusi saan
-- [ ] Teavitus saadetakse 5 minuti jooksul pärast probleemi tuvastamist
-- [ ] Teavituses on kirjas saidi nimi, URL ja probleem
-- [ ] Saan hiljem teavituse, kui sait on taas kättesaadav
-
----
-
-## 5. Monitooringu haldamine
-
-**Kasutajalugu:** Kasutajana tahan hallata olemasolevaid monitooringe, et saaksin konfiguratsiooni muuta või mittevajalikke eemaldada.
-
-### Aktsepteerimiskriteeriumid:
-- [ ] Saan vaadata kõigi monitooringute nimekirja
-- [ ] Saan muuta monitooringu nime ja kontrolli intervalli
-- [ ] Saan monitooringu ajutiselt peatada ja taas käivitada
-- [ ] Saan monitooringu jäädavalt kustutada
-- [ ] Kustutamisel küsitakse kinnitust
-- [ ] Muudatused jõustuvad koheselt
-- [ ] Kuvatakse kinnitus muudatuste salvestamisest
+### Acceptance Criteria:
+- [ ] All monitored sites are displayed in a list
+- [ ] Current status is visible for each site (ONLINE/OFFLINE/UNKNOWN)
+- [ ] Last check time is displayed
+- [ ] Response time in milliseconds is shown
+- [ ] Online sites are marked in green
+- [ ] Offline sites are marked in red
+- [ ] The page auto-refreshes every 30 seconds
 
 ---
 
-## TDD Arendusprotsess
+## User Story #3: Uptime Statistics Viewing
 
-### Soovitatud järjekord implementeerimiseks:
-1. **Veebisaidi monitooringu lisamine** - põhifunktsionaalsus
-2. **Reaalajas staatuse vaatamine** - kasutajaliides ja andmete kuvamine
-3. **Monitooringu haldamine** - CRUD operatsioonid
-4. **Uptime statistika vaatamine** - andmeanalüüs ja aruandlus
-5. **Sisenematu saidi teavitused** - teavituste süsteem
+**As a user**, I want to see uptime statistics for a specific site over different time periods so that I can assess its reliability.
 
-### TDD sammud iga kasutajaloo jaoks:
-1. **Red** - Kirjuta test, mis ebaõnnestub
-2. **Green** - Kirjuta minimaalne kood, et test läbiks
-3. **Refactor** - Paranda koodi kvaliteeti, hoides teste rohelised
+### Acceptance Criteria:
+- [ ] I can select a site by clicking to view its details
+- [ ] Uptime percentage is displayed for the last 24 hours, 7 days, and 30 days
+- [ ] Average response time for the selected period is shown
+- [ ] Number and total duration of outages are displayed
+- [ ] Statistics are calculated correctly based on monitoring data
+- [ ] Data is presented in a clearly readable format
 
 ---
 
-## Tehnilised märkused
+## User Story #4: Site Down Notifications
 
-- Kõik aktsepteerimiskriteeriumid peaksid olema kaetud automatiseeritud testidega
-- Kasuta checkboxe märkimaks valmis kriteeriumeid
-- Iga kasutajaloo võib jagada väiksemateks alamülesanneteks
-- Dokumenteeri testijuhtumid ja nende tulemused
+**As a user**, I want to receive notifications when a monitored site becomes unavailable so that I can react quickly.
+
+### Acceptance Criteria:
+- [ ] The system detects when a site doesn't respond for 3 consecutive checks
+- [ ] I can configure an email address for receiving notifications
+- [ ] I can choose which sites I want to receive notifications for
+- [ ] Notification is sent within 5 minutes after problem detection
+- [ ] The notification includes site name, URL, and the problem
+- [ ] I receive a notification later when the site is available again
+
+---
+
+## User Story #5: Monitoring Management
+
+**As a user**, I want to manage existing monitors so that I can change configuration or remove unnecessary ones.
+
+### Acceptance Criteria:
+- [ ] I can view a list of all monitors
+- [ ] I can modify monitor name and check interval
+- [ ] I can temporarily pause and restart monitoring
+- [ ] I can permanently delete a monitor
+- [ ] Confirmation is requested when deleting
+- [ ] Changes take effect immediately
+- [ ] Confirmation of saved changes is displayed
+
+---
+
+## TDD Development Process
+
+### Recommended Implementation Order:
+1. **User Story #1: Adding Website Monitoring** - Core functionality
+2. **User Story #2: Real-time Status Viewing** - User interface and data display
+3. **User Story #5: Monitoring Management** - CRUD operations
+4. **User Story #3: Uptime Statistics Viewing** - Data analysis and reporting
+5. **User Story #4: Site Down Notifications** - Notification system
+
+### TDD Steps for Each User Story:
+1. **Red** - Write a test that fails
+2. **Green** - Write minimal code to make the test pass
+3. **Refactor** - Improve code quality while keeping tests green
+
+---
+
+## Technical Notes
+
+- All acceptance criteria should be covered by automated tests
+- Use checkboxes to mark completed criteria
+- Each user story can be broken down into smaller sub-tasks
+- Document test cases and their results
+- Consider edge cases and error handling for each criterion
+- Maintain test coverage reports throughout development
