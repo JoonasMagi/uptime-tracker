@@ -5,14 +5,14 @@
 EMAIL_PROVIDER=mailgun
 
 # Mailgun Configuration (RECOMMENDED for production)
-MAILGUN_API_KEY=your-mailgun-private-api-key
-MAILGUN_DOMAIN=mg.yourdomain.com
-MAILGUN_FROM_EMAIL=noreply@mg.yourdomain.com
+MAILGUN_API_KEY=
+MAILGUN_DOMAIN=up.eerovallistu.site
+MAILGUN_FROM_EMAIL=eero.vallistu@vikk.ee
 MAILGUN_FROM_NAME=Uptime Tracker
-MAILGUN_REGION=us
+MAILGUN_REGION=eu
 
 # SendGrid Configuration (alternative for production)
-SENDGRID_API_KEY=your-sendgrid-api-key
+SENDGRID_API_KEY=oyur-sendgrid-api-key
 SENDGRID_FROM_EMAIL=your-verified-email@yourdomain.com
 SENDGRID_FROM_NAME=Uptime Tracker
 
