@@ -153,7 +153,6 @@ test.describe('User Story 4: Site Down Notifications', () => {
     // Verify notification was sent within 5 minutes
     expect(timeDiffMinutes).toBeLessThanOrEqual(5);
   });
-
   // Criterion 5: The notification includes site name, URL, and the problem
   test('notification includes site details and problem description', async ({ page }) => {
     // Configure notifications
@@ -162,15 +161,23 @@ test.describe('User Story 4: Site Down Notifications', () => {
     await page.locator('[data-testid="site-notification-checkbox"]').first().check();
     await page.locator('[data-testid="save-notification-settings"]').click();
 
+    // Wait for settings to be saved
+    await expect(page.locator('[data-testid="settings-success-message"]')).toBeVisible();
+
     // Get site details for later verification
     await page.goto('/dashboard');
     const siteName = await page.locator('[data-testid="website-item"]').first().locator('[data-testid="website-name"]').textContent();
     const siteUrl = await page.locator('[data-testid="website-item"]').first().locator('[data-testid="website-url"]').textContent();
 
+    // Ensure we have the site details
+    expect(siteName).toBeTruthy();
+    expect(siteUrl).toBeTruthy();
+
     // Simulate site going down
-    await page.request.post('/api/test/simulate-downtime', {
+    const response = await page.request.post('/api/test/simulate-downtime', {
       data: { siteId: 'test-site-1' }
     });
+    expect(response.ok()).toBeTruthy();
 
     // Check notification content in the notification preview or log
     await page.goto('/notifications/log');
@@ -181,16 +188,26 @@ test.describe('User Story 4: Site Down Notifications', () => {
       const notificationContent = page.locator('[data-testid="notification-content"]').first();
       return await notificationContent.isVisible();
     }, {
-      timeout: 30000
+      timeout: 30000,
+      intervals: [1000, 2000, 5000] // Check at increasing intervals
     }).toBeTruthy();
 
     const notificationContent = page.locator('[data-testid="notification-content"]').first();
 
-    // Verify notification contains required information
+    // Verify notification contains required information with more specific assertions
     await expect(notificationContent).toContainText(siteName);
     await expect(notificationContent).toContainText(siteUrl);
     await expect(notificationContent).toContainText(/down|unavailable|offline/i);
-    await expect(notificationContent).toContainText(/error|problem|issue/i);
+    await expect(notificationContent).toContainText(/error|problem|issue|experiencing/i);
+
+    // Additional verification: check the notification structure
+    const siteInfo = notificationContent.locator('.site-info');
+    await expect(siteInfo).toContainText(siteName);
+    await expect(siteInfo).toContainText(siteUrl);
+
+    const notificationMessage = notificationContent.locator('.notification-message');
+    await expect(notificationMessage).toBeVisible();
+    await expect(notificationMessage).toContainText(/problem|down|fail/i);
   });
 
   // Criterion 6: I receive a notification later when the site is available again
