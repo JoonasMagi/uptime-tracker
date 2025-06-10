@@ -35,10 +35,10 @@ const emailConfig = {
   // Mailgun configuration (recommended for production)
   mailgun: {
     apiKey: process.env.MAILGUN_API_KEY || '',
-    domain: process.env.MAILGUN_DOMAIN || '',
-    fromEmail: process.env.MAILGUN_FROM_EMAIL || `noreply@${process.env.MAILGUN_DOMAIN}` || '',
+    domain: process.env.MAILGUN_DOMAIN || 'up.eerovallistu.site',
+    fromEmail: process.env.MAILGUN_FROM_EMAIL || 'noreply@up.eerovallistu.site',
     fromName: process.env.MAILGUN_FROM_NAME || 'Website Monitoring Service',
-    region: process.env.MAILGUN_REGION || 'us' // 'us' or 'eu'
+    region: process.env.MAILGUN_REGION || 'eu' // 'us' or 'eu'
   },
 
   // MailHog configuration (recommended for local testing)

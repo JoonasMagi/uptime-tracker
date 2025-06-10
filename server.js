@@ -139,7 +139,20 @@ function initializeMockData() {
     monitoringHistory[website.id] = [];    // Generate monitoring history for the last 30 days
     for (let i = 0; i < 30 * 24; i++) { // 30 days * 24 hours
       const timestamp = new Date(now.getTime() - (i * 60 * 60 * 1000)); // Each hour
-      const isOnline = Math.random() > 0.05; // 95% uptime
+
+      // Create deterministic downtime patterns for testing
+      let isOnline;
+      if (website.id === 1) {
+        // First website: very high uptime (~98%) - 1 downtime every 50 checks
+        isOnline = i % 50 !== 0;
+      } else if (website.id === 2) {
+        // Second website: good uptime (~95%) - 1 downtime every 20 checks
+        // This ensures we get around 95% uptime, never 100%
+        isOnline = i % 20 !== 0;
+      } else {
+        // Other websites: moderate uptime (~90%) - 1 downtime every 10 checks
+        isOnline = i % 10 !== 0;
+      }
 
       monitoringHistory[website.id].push({
         timestamp: timestamp,
@@ -347,7 +360,7 @@ function calculateStatistics(websiteId, period = '24h') {
   }
   const totalChecks = periodData.length;
   const onlineChecks = periodData.filter(record => record.status === 'up' || record.status === 'online').length;
-  const uptimePercentage = totalChecks > 0 ? ((onlineChecks / totalChecks) * 100).toFixed(1) : 0;
+  const uptimePercentage = totalChecks > 0 ? ((onlineChecks / totalChecks) * 100) : 0;
 
   // Calculate average response time
   const onlineRecords = periodData.filter(record => record.responseTime !== null);
@@ -383,7 +396,7 @@ function calculateStatistics(websiteId, period = '24h') {
   const totalOutageDuration = outages.reduce((sum, outage) => sum + outage.duration, 0);
 
   return {
-    uptimePercentage: parseFloat(uptimePercentage),
+    uptimePercentage: parseFloat(uptimePercentage.toFixed(1)),
     avgResponseTime,
     outageCount: outages.length,
     totalOutageDuration: Math.round(totalOutageDuration), // in hours
@@ -407,7 +420,7 @@ async function checkWebsite(website) {
       }
     });
 
-    const responseTime = Date.now() - startTime;    const checkResult = {
+    const responseTime = Date.now() - startTime; const checkResult = {
       timestamp: new Date(),
       status: 'up',
       responseTime: responseTime,
@@ -436,7 +449,7 @@ async function checkWebsite(website) {
     console.log(`✅ ${website.name} (${website.url}) - Online - ${responseTime}ms`);
 
   } catch (error) {
-    const responseTime = Date.now() - startTime;    const checkResult = {
+    const responseTime = Date.now() - startTime; const checkResult = {
       timestamp: new Date(),
       status: 'down',
       responseTime: responseTime,
@@ -740,9 +753,9 @@ app.get('/api/website/:id/status', (req, res) => {
 app.put('/api/website/:id', (req, res) => {
   const websiteId = parseInt(req.params.id);
   const { name, checkInterval } = req.body;
-  
+
   const website = websites.find(w => w.id === websiteId);
-  
+
   if (!website) {
     return res.status(404).json({ error: 'Website not found' });
   }
@@ -751,10 +764,10 @@ app.put('/api/website/:id', (req, res) => {
   if (name) {
     website.name = name;
   }
-    if (checkInterval) {
+  if (checkInterval) {
     // Store interval as numeric string (minutes)
     website.interval = checkInterval.toString();
-    
+
     // Restart monitoring with new interval if not paused
     if (website.status !== 'paused') {
       stopMonitoring(websiteId);
@@ -779,7 +792,7 @@ app.post('/api/website/:id/pause', (req, res) => {
 
   // Stop monitoring
   stopMonitoring(websiteId);
-  
+
   // Update status
   website.status = 'paused';
   website.statusText = 'Peatatud';
@@ -803,7 +816,7 @@ app.post('/api/website/:id/resume', (req, res) => {
   // Resume monitoring
   website.status = 'up'; // Will be updated by the first check
   website.statusText = 'ONLINE';
-  
+
   startMonitoring(website);
 
   res.json({
@@ -824,10 +837,10 @@ app.delete('/api/website/:id', (req, res) => {
 
   // Stop monitoring
   stopMonitoring(websiteId);
-  
+
   // Remove from websites array
   websites.splice(websiteIndex, 1);
-  
+
   // Clean up monitoring history
   delete monitoringHistory[websiteId];
   delete siteFailureCounts[websiteId];
@@ -854,7 +867,7 @@ app.post('/api/test/simulate-downtime', (req, res) => {
   } else {
     site = websites.find(w => w.id == siteId);
   }
-  
+
   if (!site) {
     return res.status(404).json({ error: 'Site not found' });
   }
@@ -924,7 +937,7 @@ app.post('/api/test/simulate-recovery', (req, res) => {
   } else {
     site = websites.find(w => w.id == siteId);
   }
-  
+
   if (!site) {
     return res.status(404).json({ error: 'Site not found' });
   }

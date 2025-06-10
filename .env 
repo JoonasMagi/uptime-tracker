@@ -2,12 +2,12 @@
 # Copy this file to .env and fill in your email settings
 
 # Email Provider (mailgun, sendgrid, mailhog, gmail, outlook, custom, or test)
-EMAIL_PROVIDER=mailgun
+EMAIL_PROVIDER=test
 
 # Mailgun Configuration (RECOMMENDED for production)
-MAILGUN_API_KEY=
+MAILGUN_API_KEY=exampleapikey
 MAILGUN_DOMAIN=up.eerovallistu.site
-MAILGUN_FROM_EMAIL=eero.vallistu@vikk.ee
+MAILGUN_FROM_EMAIL=noreply@up.eerovallistu.site
 MAILGUN_FROM_NAME=Uptime Tracker
 MAILGUN_REGION=eu
 
@@ -32,6 +32,8 @@ EMAIL_PASSWORD=your-app-password
 SMTP_HOST=smtp.your-provider.com
 SMTP_PORT=587
 SMTP_SECURE=false
+
+
 
 # MailHog mode (EMAIL_PROVIDER=mailhog) - RECOMMENDED FOR TESTING:
 # 1. Install MailHog: go install github.com/mailhog/MailHog@latest
