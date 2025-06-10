@@ -93,6 +93,77 @@ Uptime tracker application for monitoring website availability, developed using 
 
 ---
 
+## Email Configuration
+
+The uptime tracker now supports real email notifications! Configure email settings to receive alerts when your sites go down or recover.
+
+### Quick Setup
+
+1. **Copy the environment file:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Choose your email provider and configure:**
+
+   **For Gmail (Recommended):**
+   ```env
+   EMAIL_PROVIDER=gmail
+   EMAIL_USER=your-email@gmail.com
+   EMAIL_PASSWORD=your-app-password
+   ```
+
+   **Important for Gmail:** You need to use an "App Password", not your regular password:
+   - Enable 2-factor authentication on your Google account
+   - Go to Google Account settings → Security → App passwords
+   - Generate a new app password for "Mail"
+   - Use this app password in the EMAIL_PASSWORD field
+
+   **For Outlook/Hotmail:**
+   ```env
+   EMAIL_PROVIDER=outlook
+   EMAIL_USER=your-email@outlook.com
+   EMAIL_PASSWORD=your-password
+   ```
+
+   **For MailHog (Recommended for Testing):**
+   ```env
+   EMAIL_PROVIDER=mailhog
+   ```
+
+   **MailHog Setup:**
+   1. Install MailHog: `go install github.com/mailhog/MailHog@latest`
+   2. Start MailHog: `MailHog`
+   3. View emails at: http://localhost:8025
+   4. All emails are captured locally, no real emails sent!
+
+   **For Test Mode (Alternative):**
+   ```env
+   EMAIL_PROVIDER=test
+   ```
+   This uses Ethereal Email for testing - check the console for preview URLs of sent emails.
+
+3. **Start the application:**
+   ```bash
+   npm start
+   ```
+
+4. **Configure notifications in the app:**
+   - Go to Settings → Notifications
+   - Enter your email address
+   - Select which sites to monitor
+   - Set the failure threshold (default: 3 consecutive failures)
+
+### Email Features
+
+- **HTML formatted emails** with clear site information
+- **Down alerts** when sites become unavailable
+- **Recovery notifications** when sites come back online
+- **Test mode** for development without sending real emails
+- **Multiple provider support** (Gmail, Outlook, custom SMTP)
+
+---
+
 ## Technical Notes
 
 - All acceptance criteria should be covered by automated tests
