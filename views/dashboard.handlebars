@@ -11,8 +11,11 @@
         </div>
     </header>
 
-    <main class="dashboard-content">        <div data-testid="websites-list" class="websites-list">            {{#each websites}}
-            <div data-testid="website-item" class="website-item clickable" data-status="{{#if (eq this.status 'up')}}online{{else}}{{#if (eq this.status 'down')}}offline{{else}}{{this.status}}{{/if}}{{/if}}" data-website-id="{{this.id}}">>
+    <main class="dashboard-content">
+        <div data-testid="websites-list" class="websites-list"> {{#each websites}}
+            <div data-testid="website-item" class="website-item clickable"
+                data-status="{{#if (eq this.status 'up')}}online{{else}}{{#if (eq this.status 'down')}}offline{{else}}{{this.status}}{{/if}}{{/if}}"
+                data-website-id="{{this.id}}">>
                 <div class="website-info">
                     <h3 data-testid="website-name" class="website-name">{{this.name}}</h3>
                     <p data-testid="website-url" class="website-url">{{this.url}}</p>
@@ -20,8 +23,11 @@
                 </div>
 
                 <div class="website-status-info">
-                    <div class="status-container">                        <span data-testid="website-status" class="status status-{{this.status}} {{#if (eq this.status 'up')}}status-online status-success{{else}}{{#if (eq this.status 'down')}}status-offline status-danger{{else}}status-unknown{{/if}}{{/if}}"
-                            data-status="{{#if (eq this.status 'up')}}online{{else}}{{#if (eq this.status 'down')}}offline{{else}}{{this.status}}{{/if}}{{/if}}">{{#if (eq this.status 'up')}}ONLINE{{else}}{{#if (eq this.status 'down')}}OFFLINE{{else}}{{this.statusText}}{{/if}}{{/if}}</span>
+                    <div class="status-container"> <span data-testid="website-status"
+                            class="status status-{{this.status}} {{#if (eq this.status 'up')}}status-online status-success{{else}}{{#if (eq this.status 'down')}}status-offline status-danger{{else}}status-unknown{{/if}}{{/if}}"
+                            data-status="{{#if (eq this.status 'up')}}online{{else}}{{#if (eq this.status 'down')}}offline{{else}}{{this.status}}{{/if}}{{/if}}">{{#if
+                            (eq this.status 'up')}}ONLINE{{else}}{{#if (eq this.status
+                            'down')}}OFFLINE{{else}}{{this.statusText}}{{/if}}{{/if}}</span>
                     </div>
 
                     <div class="metrics">
@@ -43,15 +49,18 @@
                         ✏️ Muuda
                     </button>
                     {{#if (eq this.status 'paused')}}
-                    <button data-testid="resume-website-btn" class="btn btn-sm btn-success" data-id="{{this.id}}" title="Resume monitoring">
+                    <button data-testid="resume-website-btn" class="btn btn-sm btn-success" data-id="{{this.id}}"
+                        title="Resume monitoring">
                         ▶️ Jätka
                     </button>
                     {{else}}
-                    <button data-testid="pause-website-btn" class="btn btn-sm btn-warning" data-id="{{this.id}}" title="Pause monitoring">
+                    <button data-testid="pause-website-btn" class="btn btn-sm btn-warning" data-id="{{this.id}}"
+                        title="Pause monitoring">
                         ⏸️ Peata
                     </button>
                     {{/if}}
-                    <button data-testid="delete-website-btn" class="btn btn-sm btn-danger" data-id="{{this.id}}" title="Delete website">
+                    <button data-testid="delete-website-btn" class="btn btn-sm btn-danger" data-id="{{this.id}}"
+                        title="Delete website">
                         🗑️ Kustuta
                     </button>
                 </div>
@@ -62,38 +71,41 @@
                         <h4>Muuda veebisaiti</h4>
                         <div class="form-group">
                             <label for="edit-name-{{this.id}}">Nimi:</label>
-                            <input data-testid="edit-name-input" type="text" id="edit-name-{{this.id}}" value="{{this.name}}" class="form-control">
+                            <input data-testid="edit-name-input" type="text" id="edit-name-{{this.id}}"
+                                value="{{this.name}}" class="form-control">
                         </div>
                         <div class="form-group">
                             <label for="edit-interval-{{this.id}}">Kontrollimise intervall:</label>
-                            <select data-testid="edit-interval-select" id="edit-interval-{{this.id}}" class="form-control">
-                                <option value="1" {{#if (eq this.interval "1")}}selected{{/if}}>1 min</option>
-                                <option value="5" {{#if (eq this.interval "5")}}selected{{/if}}>5 min</option>
-                                <option value="15" {{#if (eq this.interval "15")}}selected{{/if}}>15 min</option>
-                                <option value="30" {{#if (eq this.interval "30")}}selected{{/if}}>30 min</option>
-                                <option value="60" {{#if (eq this.interval "60")}}selected{{/if}}>1 tund</option>
+                            <select data-testid="edit-interval-select" id="edit-interval-{{this.id}}"
+                                class="form-control">
+                                <option value="1" {{#if (eq this.interval "1" )}}selected{{/if}}>1 min</option>
+                                <option value="5" {{#if (eq this.interval "5" )}}selected{{/if}}>5 min</option>
+                                <option value="15" {{#if (eq this.interval "15" )}}selected{{/if}}>15 min</option>
+                                <option value="30" {{#if (eq this.interval "30" )}}selected{{/if}}>30 min</option>
+                                <option value="60" {{#if (eq this.interval "60" )}}selected{{/if}}>1 tund</option>
                             </select>
                         </div>
                         <div class="form-actions">
-                            <button data-testid="save-changes-btn" class="btn btn-primary" data-id="{{this.id}}">Salvesta</button>
+                            <button data-testid="save-changes-btn" class="btn btn-primary"
+                                data-id="{{this.id}}">Salvesta</button>
                             <button data-testid="cancel-edit-btn" class="btn btn-secondary">Tühista</button>
                         </div>
                     </div>
                 </div>
             </div>
-            {{/each}}        </div>
+            {{/each}}
+        </div>
     </main>
 
     <!-- Success Message -->
-    <div data-testid="success-message" class="success-message hidden">
-        Success message will appear here
-    </div>
+    <div data-testid="success-message" class="success-message hidden"></div>
 
     <!-- Delete Confirmation Dialog -->
     <div data-testid="delete-confirmation-dialog" class="modal-overlay hidden">
         <div class="modal-content">
             <h3 data-testid="delete-dialog-title">Kustutamise kinnitus</h3>
-            <p data-testid="delete-dialog-message">Kas olete kindel, et soovite selle veebisaidi monitoorimise kustutada?</p>
+            <p data-testid="delete-dialog-message">Kas olete kindel, et soovite selle veebisaidi monitoorimise
+                kustutada?</p>
             <div class="modal-actions">
                 <button data-testid="confirm-delete-btn" class="btn btn-danger">Jah, kustuta</button>
                 <button data-testid="cancel-delete-btn" class="btn btn-secondary">Tühista</button>
@@ -124,178 +136,245 @@
 {{/unless}}
 
 <style>
-/* Management Controls */
-.management-controls {
-    display: none;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    flex-direction: column;
-    gap: 5px;
-    z-index: 10;
-}
+    /* Management Controls */
+    .management-controls {
+        display: none;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        flex-direction: column;
+        gap: 5px;
+        z-index: 10;
+    }
 
-.website-item:hover .management-controls {
-    display: flex;
-}
+    .website-item:hover .management-controls {
+        display: flex;
+    }
 
-.website-item {
-    position: relative;
-}
+    .website-item {
+        position: relative;
+    }
 
-.btn-sm {
-    padding: 4px 8px;
-    font-size: 12px;
-    min-width: 70px;
-}
+    .btn-sm {
+        padding: 4px 8px;
+        font-size: 12px;
+        min-width: 70px;
+    }
 
-.btn-secondary { background-color: #6c757d; color: white; }
-.btn-success { background-color: #28a745; color: white; }
-.btn-warning { background-color: #ffc107; color: black; }
-.btn-danger { background-color: #dc3545; color: white; }
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
 
-.btn:hover {
-    opacity: 0.8;
-}
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+    }
 
-/* Edit Form */
-.edit-form {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.95);
-    border: 2px solid #007bff;
-    border-radius: 8px;
-    z-index: 20;
-}
+    .btn-warning {
+        background-color: #ffc107;
+        color: black;
+    }
 
-.edit-form-content {
-    padding: 20px;
-}
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+    }
 
-.form-group {
-    margin-bottom: 15px;
-}
+    .btn:hover {
+        opacity: 0.8;
+    }
 
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
+    /* Edit Form */
+    .edit-form {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.98);
+        border: 2px solid #007bff;
+        border-radius: 8px;
+        z-index: 50;
+        pointer-events: auto;
+        min-height: 200px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
 
-.form-control {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-}
+    .edit-form-content {
+        padding: 20px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
 
-.form-actions {
-    display: flex;
-    gap: 10px;
-}
+    /* Make website item taller when edit form is visible */
+    .website-item:has(.edit-form:not(.hidden)) {
+        min-height: 220px;
+    }
 
-/* Modal */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
+    /* Disable pointer events on website item when edit form is active */
+    .website-item.edit-mode {
+        pointer-events: none !important;
+        min-height: 220px;
+        border: 3px solid red !important;
+        /* Debug visual indicator */
+    }
 
-.modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 400px;
-    width: 90%;
-}
+    .website-item.edit-mode * {
+        pointer-events: none !important;
+    }
 
-.modal-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    margin-top: 20px;
-}
+    .website-item.edit-mode .edit-form {
+        pointer-events: auto !important;
+    }
 
-/* Success Message */
-.success-message {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-    border-radius: 4px;
-    padding: 10px 20px;
-    z-index: 1001;
-}
+    .website-item.edit-mode .edit-form * {
+        pointer-events: auto !important;
+    }
 
-.hidden {
-    display: none !important;
-}
+    .form-group {
+        margin-bottom: 15px;
+    }
 
-/* Interval info */
-.interval-info {
-    font-size: 12px;
-    color: #666;
-    margin-top: 2px;
-}
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+        font-size: 14px;
+    }
 
-/* Status styles for paused */
-.status-paused {
-    background-color: #6c757d;
-    color: white;
-}
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        box-sizing: border-box;
+        transition: border-color 0.2s ease;
+    }
 
-[data-status="paused"] {
-    opacity: 0.7;
-}
+    .form-control:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    }
 
-/* Status color coding */
-.status-up,
-.status-online,
-.status-success,
-[data-status="online"] .status {
-    background-color: #28a745;
-    color: white;
-}
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
 
-.status-down,
-.status-offline,
-.status-danger,
-.status-error,
-[data-status="offline"] .status {
-    background-color: #dc3545;
-    color: white;
-}
+    .form-actions .btn {
+        padding: 8px 16px;
+        font-size: 14px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+    }
 
-.status-unknown,
-[data-status="unknown"] .status {
-    background-color: #6c757d;
-    color: white;
-}
+    /* Modal */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
 
-/* Green color for online status elements */
-[data-status="online"] [data-testid="website-status"] {
-    background-color: #28a745 !important;
-    color: white !important;
-}
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 400px;
+        width: 90%;
+    }
 
-/* Red color for offline status elements */
-[data-status="offline"] [data-testid="website-status"] {
-    background-color: #dc3545 !important;
-    color: white !important;
-}
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 20px;
+    }
+
+    /* Success Message */
+    .success-message {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+        border-radius: 4px;
+        padding: 10px 20px;
+        z-index: 1001;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    /* Interval info */
+    .interval-info {
+        font-size: 12px;
+        color: #666;
+        margin-top: 2px;
+    }
+
+    /* Status styles for paused */
+    .status-paused {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    [data-status="paused"] {
+        opacity: 0.7;
+    }
+
+    /* Status color coding */
+    .status-up,
+    .status-online,
+    .status-success,
+    [data-status="online"] .status {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .status-down,
+    .status-offline,
+    .status-danger,
+    .status-error,
+    [data-status="offline"] .status {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .status-unknown,
+    [data-status="unknown"] .status {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    /* Green color for online status elements */
+    [data-status="online"] [data-testid="website-status"] {
+        background-color: #28a745 !important;
+        color: white !important;
+    }
+
+    /* Red color for offline status elements */
+    [data-status="offline"] [data-testid="website-status"] {
+        background-color: #dc3545 !important;
+        color: white !important;
+    }
 </style>
 
 <script src="/js/dashboard.js"></script>

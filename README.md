@@ -53,12 +53,12 @@ Uptime tracker application for monitoring website availability, developed using 
 **As a user**, I want to receive notifications when a monitored site becomes unavailable so that I can react quickly.
 
 ### Acceptance Criteria:
-- [ ] The system detects when a site doesn't respond for 3 consecutive checks
-- [ ] I can configure an email address for receiving notifications
-- [ ] I can choose which sites I want to receive notifications for
-- [ ] Notification is sent within 5 minutes after problem detection
-- [ ] The notification includes site name, URL, and the problem
-- [ ] I receive a notification later when the site is available again
+- [x] The system detects when a site doesn't respond for 3 consecutive checks
+- [x] I can configure an email address for receiving notifications
+- [x] I can choose which sites I want to receive notifications for
+- [x] Notification is sent within 5 minutes after problem detection
+- [x] The notification includes site name, URL, and the problem
+- [x] I receive a notification later when the site is available again
 
 ---
 
@@ -67,13 +67,13 @@ Uptime tracker application for monitoring website availability, developed using 
 **As a user**, I want to manage existing monitors so that I can change configuration or remove unnecessary ones.
 
 ### Acceptance Criteria:
-- [ ] I can view a list of all monitors
-- [ ] I can modify monitor name and check interval
-- [ ] I can temporarily pause and restart monitoring
-- [ ] I can permanently delete a monitor
-- [ ] Confirmation is requested when deleting
-- [ ] Changes take effect immediately
-- [ ] Confirmation of saved changes is displayed
+- [x] I can view a list of all monitors
+- [x] I can modify monitor name and check interval
+- [x] I can temporarily pause and restart monitoring
+- [x] I can permanently delete a monitor
+- [x] Confirmation is requested when deleting
+- [x] Changes take effect immediately
+- [x] Confirmation of saved changes is displayed
 
 ---
 
@@ -106,7 +106,17 @@ The uptime tracker now supports real email notifications! Configure email settin
 
 2. **Choose your email provider and configure:**
 
-   **For Gmail (Recommended):**
+   **For SendGrid (Recommended for DigitalOcean):**
+   ```env
+   EMAIL_PROVIDER=sendgrid
+   SENDGRID_API_KEY=your-sendgrid-api-key
+   SENDGRID_FROM_EMAIL=your-verified-email@yourdomain.com
+   SENDGRID_FROM_NAME=Uptime Tracker
+   ```
+
+   **Why SendGrid?** DigitalOcean blocks SMTP ports (25, 587, 465) by default. SendGrid uses HTTP API instead of SMTP, so it works perfectly on DigitalOcean! See `SENDGRID_SETUP.md` for detailed setup instructions.
+
+   **For Gmail:**
    ```env
    EMAIL_PROVIDER=gmail
    EMAIL_USER=your-email@gmail.com

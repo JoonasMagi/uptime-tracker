@@ -25,6 +25,22 @@ const emailConfig = {
     password: process.env.EMAIL_PASSWORD || ''
   },
 
+  // SendGrid configuration (recommended for production)
+  sendgrid: {
+    apiKey: process.env.SENDGRID_API_KEY || '',
+    fromEmail: process.env.SENDGRID_FROM_EMAIL || process.env.EMAIL_USER || '',
+    fromName: process.env.SENDGRID_FROM_NAME || 'Uptime Tracker'
+  },
+
+  // Mailgun configuration (recommended for production)
+  mailgun: {
+    apiKey: process.env.MAILGUN_API_KEY || '',
+    domain: process.env.MAILGUN_DOMAIN || 'up.eerovallistu.site',
+    fromEmail: process.env.MAILGUN_FROM_EMAIL || 'noreply@up.eerovallistu.site',
+    fromName: process.env.MAILGUN_FROM_NAME || 'Website Monitoring Service',
+    region: process.env.MAILGUN_REGION || 'eu' // 'us' or 'eu'
+  },
+
   // MailHog configuration (recommended for local testing)
   mailhog: {
     host: 'localhost',
@@ -46,18 +62,28 @@ const emailConfig = {
 
 // Get the active configuration based on environment
 function getEmailConfig() {
-  const provider = process.env.EMAIL_PROVIDER || 'mailhog';
+  const provider = process.env.EMAIL_PROVIDER || 'mailgun';
 
   if (emailConfig[provider]) {
     return emailConfig[provider];
   }
 
-  console.warn(`Unknown email provider: ${provider}, falling back to mailhog configuration`);
-  return emailConfig.mailhog;
+  console.warn(`Unknown email provider: ${provider}, falling back to mailgun configuration`);
+  return emailConfig.mailgun;
 }
 
 // Validate email configuration
 function validateEmailConfig(config) {
+  // SendGrid validation (API key without domain)
+  if (config.apiKey !== undefined && !config.domain) {
+    return config.apiKey && config.fromEmail;
+  }
+
+  // Mailgun validation (API key with domain)
+  if (config.apiKey !== undefined && config.domain !== undefined) {
+    return config.apiKey && config.domain && config.fromEmail;
+  }
+
   // MailHog doesn't require authentication
   if (config.host === 'localhost' && config.port === 1025) {
     return true;
