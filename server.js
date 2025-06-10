@@ -1,7 +1,12 @@
+// Load environment variables
+require('dotenv').config();
+
 const express = require('express');
 const { engine } = require('express-handlebars');
 const path = require('path');
 const axios = require('axios');
+const emailService = require('./emailService');
+const { getEmailConfig, validateEmailConfig } = require('./config/email');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -48,6 +53,29 @@ let notificationSettings = {
 let notificationLog = [];
 let siteFailureCounts = {}; // Track consecutive failures per site
 let lastNotificationStatus = {}; // Track last notification status per site
+
+// Initialize email service
+async function initializeEmailService() {
+  const emailConfig = getEmailConfig();
+
+  if (validateEmailConfig(emailConfig) || process.env.EMAIL_PROVIDER === 'test') {
+    try {
+      const success = await emailService.configure(emailConfig);
+      if (success) {
+        // Verify configuration in background
+        emailService.verifyConfiguration().catch(err => {
+          console.warn('⚠️ Email verification failed:', err.message);
+        });
+      }
+    } catch (error) {
+      console.error('❌ Failed to initialize email service:', error.message);
+    }
+  } else {
+    console.warn('⚠️ Email configuration is incomplete. Email notifications will be disabled.');
+    console.warn('⚠️ Set EMAIL_USER and EMAIL_PASSWORD environment variables to enable email notifications.');
+    console.warn('⚠️ Or set EMAIL_PROVIDER=test to use test mode.');
+  }
+}
 
 // Initialize with some mock data for testing
 function initializeMockData() {
@@ -169,7 +197,9 @@ function detectSiteDown(siteId, status) {
 
       if (site && notificationSettings.enabledSites.includes(siteId.toString()) &&
         lastNotificationStatus[siteId] !== 'down') {
-        sendDownNotification(site);
+        sendDownNotification(site).catch(err => {
+          console.error('Error in sendDownNotification:', err);
+        });
         lastNotificationStatus[siteId] = 'down';
       }
     }
@@ -186,7 +216,9 @@ function detectSiteDown(siteId, status) {
 
       if (site && notificationSettings.enabledSites.includes(siteId.toString())) {
         console.log(`🟢 Sending recovery notification for site ${siteId}`);
-        sendRecoveryNotification(site);
+        sendRecoveryNotification(site).catch(err => {
+          console.error('Error in sendRecoveryNotification:', err);
+        });
         lastNotificationStatus[siteId] = 'up';
       }
     }
@@ -194,7 +226,7 @@ function detectSiteDown(siteId, status) {
   }
 }
 
-function sendDownNotification(site) {
+async function sendDownNotification(site) {
   const timestamp = new Date();
   const notification = {
     id: Date.now(),
@@ -210,11 +242,35 @@ function sendDownNotification(site) {
 
   notificationLog.unshift(notification);
 
-  console.log(`📧 Email notification sent to ${notificationSettings.email}: ${notification.message}`);
+  // Send real email notification
+  if (notificationSettings.email) {
+    try {
+      const emailSent = await emailService.sendDownNotification(
+        notificationSettings.email,
+        site,
+        notificationSettings.consecutiveFailures
+      );
+
+      if (emailSent) {
+        console.log(`📧 Email notification sent successfully to ${notificationSettings.email}`);
+        notification.emailSent = true;
+      } else {
+        console.log(`❌ Failed to send email notification to ${notificationSettings.email}`);
+        notification.emailSent = false;
+      }
+    } catch (error) {
+      console.error(`❌ Error sending email notification:`, error.message);
+      notification.emailSent = false;
+    }
+  } else {
+    console.log(`⚠️ No email address configured for notifications`);
+    notification.emailSent = false;
+  }
+
   console.log(`📋 Notification logged:`, notification);
 }
 
-function sendRecoveryNotification(site) {
+async function sendRecoveryNotification(site) {
   const timestamp = new Date();
   const notification = {
     id: Date.now() + 1,
@@ -230,8 +286,31 @@ function sendRecoveryNotification(site) {
 
   notificationLog.unshift(notification);
 
-  // Simulate email sending
-  console.log(`📧 Recovery notification sent to ${notificationSettings.email}: ${notification.message}`);
+  // Send real email notification
+  if (notificationSettings.email) {
+    try {
+      const emailSent = await emailService.sendRecoveryNotification(
+        notificationSettings.email,
+        site
+      );
+
+      if (emailSent) {
+        console.log(`📧 Recovery notification sent successfully to ${notificationSettings.email}`);
+        notification.emailSent = true;
+      } else {
+        console.log(`❌ Failed to send recovery notification to ${notificationSettings.email}`);
+        notification.emailSent = false;
+      }
+    } catch (error) {
+      console.error(`❌ Error sending recovery notification:`, error.message);
+      notification.emailSent = false;
+    }
+  } else {
+    console.log(`⚠️ No email address configured for notifications`);
+    notification.emailSent = false;
+  }
+
+  console.log(`📋 Recovery notification logged:`, notification);
 }
 
 // Helper function to calculate statistics using real monitoring data
@@ -888,9 +967,17 @@ function isValidUrl(string) {
   }
 }
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}/dashboard`);
+// Initialize email service and start server
+async function startServer() {
+  await initializeEmailService();
+
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}/dashboard`);
+  });
+}
+
+startServer().catch(err => {
+  console.error('Failed to start server:', err);
 });
 
 module.exports = app;
