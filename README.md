@@ -106,7 +106,17 @@ The uptime tracker now supports real email notifications! Configure email settin
 
 2. **Choose your email provider and configure:**
 
-   **For Gmail (Recommended):**
+   **For SendGrid (Recommended for DigitalOcean):**
+   ```env
+   EMAIL_PROVIDER=sendgrid
+   SENDGRID_API_KEY=your-sendgrid-api-key
+   SENDGRID_FROM_EMAIL=your-verified-email@yourdomain.com
+   SENDGRID_FROM_NAME=Uptime Tracker
+   ```
+
+   **Why SendGrid?** DigitalOcean blocks SMTP ports (25, 587, 465) by default. SendGrid uses HTTP API instead of SMTP, so it works perfectly on DigitalOcean! See `SENDGRID_SETUP.md` for detailed setup instructions.
+
+   **For Gmail:**
    ```env
    EMAIL_PROVIDER=gmail
    EMAIL_USER=your-email@gmail.com

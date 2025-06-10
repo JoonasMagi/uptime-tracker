@@ -1,10 +1,14 @@
 const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 
 class EmailService {
   constructor() {
     this.transporter = null;
     this.isConfigured = false;
     this.isTestMode = false;
+    this.isSendGrid = false;
+    this.fromEmail = '';
+    this.fromName = '';
   }
 
   // Configure email service with SMTP settings
@@ -13,8 +17,19 @@ class EmailService {
       // Support for different email providers
       let transportConfig;
 
+      // Check if this is SendGrid mode
+      if (emailConfig.apiKey !== undefined) {
+        this.isSendGrid = true;
+        sgMail.setApiKey(emailConfig.apiKey);
+        this.fromEmail = emailConfig.fromEmail;
+        this.fromName = emailConfig.fromName || 'Uptime Tracker';
+        this.isConfigured = true;
+        console.log('📧 SendGrid mode enabled - emails will be sent via SendGrid API');
+        console.log(`📧 From: ${this.fromName} <${this.fromEmail}>`);
+        return true;
+      }
       // Check if this is MailHog mode
-      if (emailConfig.host === 'localhost' && emailConfig.port === 1025) {
+      else if (emailConfig.host === 'localhost' && emailConfig.port === 1025) {
         this.isTestMode = true;
         transportConfig = {
           host: 'localhost',
@@ -79,14 +94,21 @@ class EmailService {
 
   // Verify email configuration
   async verifyConfiguration() {
-    if (!this.isConfigured || !this.transporter) {
+    if (!this.isConfigured) {
       return false;
     }
 
     try {
-      await this.transporter.verify();
-      console.log('✅ Email configuration verified');
-      return true;
+      if (this.isSendGrid) {
+        // SendGrid doesn't have a direct verify method, but we can check if API key is set
+        console.log('✅ SendGrid configuration verified');
+        return true;
+      } else if (this.transporter) {
+        await this.transporter.verify();
+        console.log('✅ Email configuration verified');
+        return true;
+      }
+      return false;
     } catch (error) {
       console.error('❌ Email configuration verification failed:', error.message);
       return false;
@@ -124,29 +146,52 @@ class EmailService {
   // Generic email sending method
   async sendEmail(to, subject, text, html) {
     try {
-      const mailOptions = {
-        from: this.fromEmail,
-        to: to,
-        subject: subject,
-        text: text,
-        html: html
-      };
+      if (this.isSendGrid) {
+        // Use SendGrid API
+        const msg = {
+          to: to,
+          from: {
+            email: this.fromEmail,
+            name: this.fromName
+          },
+          subject: subject,
+          text: text,
+          html: html
+        };
 
-      const info = await this.transporter.sendMail(mailOptions);
-      console.log(`📧 Email sent successfully to ${to}: ${subject}`);
-      console.log(`📧 Message ID: ${info.messageId}`);
+        const response = await sgMail.send(msg);
+        console.log(`📧 Email sent successfully via SendGrid to ${to}: ${subject}`);
+        console.log(`📧 SendGrid Response: ${response[0].statusCode}`);
+        return true;
+      } else {
+        // Use SMTP (nodemailer)
+        const mailOptions = {
+          from: this.fromEmail,
+          to: to,
+          subject: subject,
+          text: text,
+          html: html
+        };
 
-      // In test mode, show preview URL
-      if (this.isTestMode && info.messageId) {
-        const previewUrl = nodemailer.getTestMessageUrl(info);
-        if (previewUrl) {
-          console.log(`🔗 Preview email: ${previewUrl}`);
+        const info = await this.transporter.sendMail(mailOptions);
+        console.log(`📧 Email sent successfully to ${to}: ${subject}`);
+        console.log(`📧 Message ID: ${info.messageId}`);
+
+        // In test mode, show preview URL
+        if (this.isTestMode && info.messageId) {
+          const previewUrl = nodemailer.getTestMessageUrl(info);
+          if (previewUrl) {
+            console.log(`🔗 Preview email: ${previewUrl}`);
+          }
         }
-      }
 
-      return true;
+        return true;
+      }
     } catch (error) {
       console.error(`❌ Failed to send email to ${to}:`, error.message);
+      if (error.response && error.response.body) {
+        console.error('❌ SendGrid error details:', error.response.body);
+      }
       return false;
     }
   }

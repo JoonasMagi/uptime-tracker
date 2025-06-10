@@ -25,6 +25,13 @@ const emailConfig = {
     password: process.env.EMAIL_PASSWORD || ''
   },
 
+  // SendGrid configuration (recommended for production)
+  sendgrid: {
+    apiKey: process.env.SENDGRID_API_KEY || '',
+    fromEmail: process.env.SENDGRID_FROM_EMAIL || process.env.EMAIL_USER || '',
+    fromName: process.env.SENDGRID_FROM_NAME || 'Uptime Tracker'
+  },
+
   // MailHog configuration (recommended for local testing)
   mailhog: {
     host: 'localhost',
@@ -46,18 +53,23 @@ const emailConfig = {
 
 // Get the active configuration based on environment
 function getEmailConfig() {
-  const provider = process.env.EMAIL_PROVIDER || 'mailhog';
+  const provider = process.env.EMAIL_PROVIDER || 'sendgrid';
 
   if (emailConfig[provider]) {
     return emailConfig[provider];
   }
 
-  console.warn(`Unknown email provider: ${provider}, falling back to mailhog configuration`);
-  return emailConfig.mailhog;
+  console.warn(`Unknown email provider: ${provider}, falling back to sendgrid configuration`);
+  return emailConfig.sendgrid;
 }
 
 // Validate email configuration
 function validateEmailConfig(config) {
+  // SendGrid validation
+  if (config.apiKey !== undefined) {
+    return config.apiKey && config.fromEmail;
+  }
+
   // MailHog doesn't require authentication
   if (config.host === 'localhost' && config.port === 1025) {
     return true;
